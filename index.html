@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warittorn</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @keyframes flicker {
+
+            0%,
+            19%,
+            21%,
+            23%,
+            25%,
+            54%,
+            56%,
+            100% {
+                opacity: 1;
+            }
+
+            20%,
+            24%,
+            55% {
+                opacity: 0.6;
+            }
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* หน้าที่ยังไม่ active จะถูกซ่อนไว้ */
+        .page {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        /* ================= หน้า 1: Login ================= */
+        #page-login {
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: #000;
+            background-image:
+                repeating-linear-gradient(0deg, rgba(0, 255, 65, 0.05) 0px, rgba(0, 255, 65, 0.05) 1px, transparent 1px, transparent 2px);
+        }
+
+        .card {
+            background: rgba(0, 20, 0, 0.6);
+            border: 1px solid #00ff41;
+            border-radius: 6px;
+            padding: 40px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.5), inset 0 0 15px rgba(0, 255, 65, 0.15);
+        }
+
+        .card img {
+            border-radius: 50%;
+            border: 3px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.8);
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            filter: grayscale(40%) contrast(110%);
+        }
+
+        .card h1 {
+            color: #00ff41;
+            margin-top: 20px;
+            font-size: 30px;
+            text-shadow: 0 0 8px #00ff41, 0 0 20px #00ff41;
+            animation: flicker 4s infinite;
+            letter-spacing: 1px;
+        }
+
+        .card p {
+            color: #00cc33;
+            margin: 12px 0 20px;
+            font-size: 15px;
+        }
+
+        .card p::before {
+            content: "> ";
+        }
+
+        .card a {
+            display: inline-block;
+            color: #000;
+            background-color: #00ff41;
+            padding: 10px 24px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.6);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.9);
+        }
+
+        .card input {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 4px;
+            border: 1px solid #00ff41;
+            background-color: #000;
+            color: #00ff41;
+            margin-bottom: 15px;
+            outline: none;
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .card input::placeholder {
+            color: #007a1f;
+        }
+
+        .card button {
+            background-color: transparent;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            padding: 10px 30px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card button:hover {
+            background-color: #00ff41;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
+        }
+
+        #error-msg {
+            color: #ff4d4d;
+            font-size: 13px;
+            min-height: 18px;
+            margin-top: -8px;
+            margin-bottom: 12px;
+        }
+
+        #error-msg::before {
+            content: "> ";
+        }
+
+        /* ================= หน้า 2: Desktop (Sidebar + หน้าต่างลอย) ================= */
+        #page-desktop {
+            background-color: #0b0e10;
+        }
+
+        .sidebar {
+            width: 230px;
+            flex-shrink: 0;
+            background: #0d1117;
+            border-right: 1px solid #232b2e;
+            padding: 24px 0;
+        }
+
+        .sidebar-header {
+            color: #4d5a54;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 20px 12px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            color: #a9d6b8;
+            cursor: pointer;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(111, 174, 130, 0.12);
+        }
+
+        .sidebar-item.selected {
+            background: rgba(111, 174, 130, 0.18);
+            border-left: 3px solid #6fae82;
+        }
+
+        .desktop-area {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+            background-image:
+                radial-gradient(circle, rgba(111, 174, 130, 0.06) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .desktop-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #3c4a44;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* ---------- หน้าต่างโปรไฟล์ (ลากได้ / ปิด / ย่อ / ขยาย) ---------- */
+        .terminal {
+            position: absolute;
+            top: 60px;
+            left: 60px;
+            width: 480px;
+            max-width: calc(100% - 40px);
+            background: #14181b;
+            border: 1px solid #3a5a40;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .terminal.maximized {
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100%;
+            max-width: 100%;
+            border-radius: 0;
+        }
+
+        .terminal-bar {
+            background: #1f2428;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid #2c3336;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .terminal-bar:active {
+            cursor: grabbing;
+        }
+
+        .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .dot.red {
+            background: #ff5f56;
+        }
+
+        .dot.yellow {
+            background: #ffbd2e;
+        }
+
+        .dot.green {
+            background: #27c93f;
+        }
+
+        .terminal-title {
+            margin-left: 10px;
+            color: #8a9a92;
+            font-size: 12px;
+        }
+
+        .terminal-body {
+            padding: 28px 32px;
+            color: #a9d6b8;
+            line-height: 1.9;
+            font-size: 15px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .terminal.maximized .terminal-body {
+            max-height: calc(100% - 34px);
+        }
+
+        .terminal-body .prompt {
+            color: #6fae82;
+        }
+
+        .terminal-body h2 {
+            color: #c9f0d6;
+            font-size: 20px;
+            margin-bottom: 6px;
+            font-weight: normal;
+        }
+
+        .terminal-body .label {
+            color: #6fae82;
+            display: inline-block;
+            min-width: 130px;
+        }
+
+        .info-line {
+            margin-bottom: 6px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px dashed #2c3336;
+            margin: 18px 0;
+        }
+
+        .caret {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #6fae82;
+            margin-left: 4px;
+            animation: blink 1s steps(1) infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+
+            0%,
+            49% {
+                opacity: 1;
+            }
+
+            50%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* ตอนย่อ (minimize) จะเหลือแค่แถบหัวหน้าต่าง */
+        .terminal.minimized .terminal-body {
+            display: none;
+        }
+
+        .terminal.minimized {
+            width: 260px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= หน้า 1: Login ================= -->
+    <div class="page active" id="page-login">
+        <div class="card">
+            <img src="C:\Users\PC\OneDrive\รูปภาพ\ภาพหน้าจอ\Screenshot 2024-07-31 000250.png" alt="my photo">
+            <h1>Hello, I'm Warittorn</h1>
+            <p>my name is Waritthorn. I am currently studying at King Mongkut's Institute of Technology
+                Ladkrabang.</p>
+            <a href="https://www.instagram.com/flukeluvdodii/" target="_blank">Instagram</a>
+
+            <input type="text" id="password" name="password" placeholder="Type I love Fluke to enter.">
+            <div id="error-msg"></div>
+            <button onclick="checkPassword()">Enter</button>
+        </div>
+    </div>
+
+    <!-- ================= หน้า 2: Desktop ================= -->
+    <div class="page" id="page-desktop">
+        <div class="sidebar">
+            <div class="sidebar-header">Menu</div>
+            <div class="sidebar-item" id="menu-profile" onclick="openProfileWindow()">
+                📁 Warittorn Profile
+            </div>
+        </div>
+
+        <div class="desktop-area" id="desktop-area">
+            <div class="desktop-hint" id="desktop-hint">คลิก "Warittorn Profile" ทางซ้ายเพื่อเปิดหน้าต่าง</div>
+
+            <div class="terminal" id="profile-window" style="display: none;">
+                <div class="terminal-bar" id="drag-handle">
+                    <div class="dot red" onclick="closeWindow()" title="close"></div>
+                    <div class="dot yellow" onclick="minimizeWindow()" title="minimize"></div>
+                    <div class="dot green" onclick="maximizeWindow()" title="maximize"></div>
+                    <div class="terminal-title">warittorn@profile: ~</div>
+                </div>
+                <div class="terminal-body" id="terminal-content">
+                    <p class="prompt">$ access granted. loading profile...</p>
+                    <hr class="divider">
+                    <h2>Warittorn Trakultaweekoon</h2>
+                    <div class="info-line"><span class="label">Nickname:</span> Fluke</div>
+                    <div class="info-line"><span class="label">Education:</span> King Mongkut's Institute of
+                        Technology Ladkrabang</div>
+                    <div class="info-line"><span class="label">Birthday:</span> 06/05/51</div>
+                    <div class="info-line"><span class="label">Likes:</span> Dogs, and interested in Tech</div>
+                    <div class="info-line"><span class="label">Favorite food:</span> All kinds of fruits</div>
+                    <div class="info-line"><span class="label">Favorite rice dish:</span> Omelette (ไข่เจียว), Fried
+                        egg (ไข่ดาว)</div>
+                    <div class="info-line"><span class="label">Instagram:</span>
+                        <a href="https://www.instagram.com/flukeluvdodii/" target="_blank"
+                            style="color:#6fae82;">@flukeluvdodii</a>
+                    </div>
+                    <hr class="divider">
+                    <p class="prompt">$ _<span class="caret"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ---------------- ระบบตรวจรหัสผ่าน ---------------- */
+        function checkPassword() {
+            const input = document.getElementById('password').value.trim().toLowerCase();
+            const errorMsg = document.getElementById('error-msg');
+            const correctAnswer = "i love fluke";
+
+            if (input === correctAnswer) {
+                document.getElementById('page-login').classList.remove('active');
+                document.getElementById('page-desktop').classList.add('active');
+            } else {
+                errorMsg.textContent = "why you don't love me please try again";
+            }
+        }
+
+        document.getElementById('password').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        /* ---------------- ระบบหน้าต่างโปรไฟล์ ---------------- */
+        const win = document.getElementById('profile-window');
+        const menuItem = document.getElementById('menu-profile');
+        const desktopHint = document.getElementById('desktop-hint');
+
+        function openProfileWindow() {
+            win.style.display = 'block';
+            win.classList.remove('minimized');
+            desktopHint.style.display = 'none';
+            menuItem.classList.add('selected');
+        }
+
+        function closeWindow() {
+            win.style.display = 'none';
+            desktopHint.style.display = 'block';
+            menuItem.classList.remove('selected');
+        }
+
+        function minimizeWindow() {
+            win.classList.toggle('minimized');
+        }
+
+        function maximizeWindow() {
+            win.classList.toggle('maximized');
+        }
+
+        /* ---------------- ระบบลากหน้าต่าง ---------------- */
+        const dragHandle = document.getElementById('drag-handle');
+        let isDragging = false;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        dragHandle.addEventListener('mousedown', function (e) {
+            if (e.target.classList.contains('dot')) return; // ไม่ลากถ้าคลิกที่ปุ่มวงกลม
+            if (win.classList.contains('maximized')) return; // ขยายเต็มจอแล้วลากไม่ได้
+            isDragging = true;
+            const rect = win.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (!isDragging) return;
+            const areaRect = document.getElementById('desktop-area').getBoundingClientRect();
+            let newLeft = e.clientX - areaRect.left - dragOffsetX;
+            let newTop = e.clientY - areaRect.top - dragOffsetY;
+            win.style.left = newLeft + 'px';
+            win.style.top = newTop + 'px';
+        });
+
+        document.addEventListener('mouseup', function () {
+            isDragging = false;
+        });
+
+        /* รองรับการลากบนมือถือ/แท็บเล็ต (touch) */
+        dragHandle.addEventListener('touchstart', function (e) {
+            if (e.target.classList.contains('dot')) return;
+            if (win.classList.contains('maximized')) return;
+            isDragging = true;
+            const rect = win.getBoundingClientRect();
+            const touch = e.touches[0];
+            dragOffsetX = touch.clientX - rect.left;
+            dragOffsetY = touch.clientY - rect.top;
+        });
+
+        document.addEventListener('touchmove', function (e) {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            const areaRect = document.getElementById('desktop-area').getBoundingClientRect();
+            let newLeft = touch.clientX - areaRect.left - dragOffsetX;
+            let newTop = touch.clientY - areaRect.top - dragOffsetY;
+            win.style.left = newLeft + 'px';
+            win.style.top = newTop + 'px';
+        });
+
+        document.addEventListener('touchend', function () {
+            isDragging = false;
+        });
+    </script>
+
+</body>
+
+</html>
