@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WARITTORN — archive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #070707;
+            --ink: #e8e8e8;
+            --mut: #8a8a8a;
+            --acc: #00ff41;
+            --line: rgba(255, 255, 255, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Space Grotesk', 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        ::selection {
+            background: var(--acc);
+            color: #000;
+        }
+
+        .mono {
+            font-family: 'DM Mono', 'Courier New', monospace;
+        }
+
+        .noise {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            pointer-events: none;
+            opacity: 0.05;
+            background: repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 3px);
+        }
+
+        .loader {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .loader.done {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-mark {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .loader-mark span {
+            color: var(--acc);
+        }
+
+        .loader-line {
+            width: 220px;
+            height: 1px;
+            background: var(--line);
+            overflow: hidden;
+        }
+
+        .loader-line i {
+            display: block;
+            height: 100%;
+            width: 100%;
+            background: var(--acc);
+            transform: translateX(-100%);
+            animation: load 1.2s ease forwards;
+        }
+
+        @keyframes load {
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .loader p {
+            font-size: 12px;
+            color: var(--mut);
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(7, 7, 7, 0.7);
+            backdrop-filter: blur(8px);
+        }
+
+        .wordmark {
+            font-weight: 700;
+            letter-spacing: 3px;
+            font-size: 16px;
+        }
+
+        .wordmark span {
+            color: var(--acc);
+        }
+
+        nav {
+            display: flex;
+            gap: 22px;
+        }
+
+        nav a {
+            font-size: 12px;
+            color: var(--mut);
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--acc);
+        }
+
+        .site-url {
+            font-size: 11px;
+            color: var(--mut);
+        }
+
+        .scroller {
+            height: 100vh;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+        }
+
+        .scroller::-webkit-scrollbar {
+            display: none;
+        }
+
+        .slide {
+            min-height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 90px 28px 60px;
+            position: relative;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .index {
+            font-size: 12px;
+            color: var(--mut);
+            letter-spacing: 2px;
+        }
+
+        .slide h2 {
+            font-size: clamp(38px, 8vw, 92px);
+            font-weight: 700;
+            line-height: 0.95;
+            letter-spacing: -2px;
+        }
+
+        .slide h2 span {
+            color: var(--acc);
+            text-shadow: 0 0 22px rgba(0, 255, 65, 0.35);
+        }
+
+        .hero {
+            align-items: flex-start;
+        }
+
+        .hero-meta {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 12px;
+            color: var(--mut);
+            letter-spacing: 1px;
+        }
+
+        .hero-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .hero-name p {
+            font-size: 14px;
+            color: var(--mut);
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .hero-name h1 {
+            font-size: clamp(48px, 12vw, 150px);
+            font-weight: 700;
+            line-height: 0.9;
+            letter-spacing: -4px;
+        }
+
+        .hero-name h1 .glitch {
+            color: var(--acc);
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 0 30px rgba(0, 255, 65, 0.45);
+        }
+
+        .hero-name h1 .glitch::before,
+        .hero-name h1 .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            color: var(--acc);
+            opacity: 0;
+        }
+
+        @keyframes tremble {
+            0%, 86%, 100% { opacity: 0; transform: none; }
+            87% { opacity: 0.8; transform: translate(-3px, 1px); }
+            89% { opacity: 0.6; transform: translate(3px, -1px); }
+            91% { opacity: 0.8; transform: translate(-2px, 2px); }
+            93% { opacity: 0.4; transform: translate(2px, 1px); }
+        }
+
+        .hero-name h1 .glitch::before {
+            animation: tremble 7s infinite;
+        }
+
+        figure.imgwrap {
+            width: clamp(200px, 30vw, 320px);
+            aspect-ratio: 3 / 4;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        figure.imgwrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(0.6) contrast(1.05);
+            transition: filter 0.4s;
+        }
+
+        figure.imgwrap:hover img {
+            filter: grayscale(0) contrast(1.05);
+        }
+
+        figure.imgwrap figcaption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.6);
+            font-size: 11px;
+            color: var(--acc);
+        }
+
+        .cue {
+            margin-top: 50px;
+            color: var(--mut);
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .cue b {
+            color: var(--acc);
+            animation: drop 1.6s infinite;
+            display: inline-block;
+        }
+
+        @keyframes drop {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(6px); }
+        }
+
+        .about-grid {
+            display: flex;
+            gap: 60px;
+            flex-wrap: wrap;
+            margin-top: 36px;
+        }
+
+        .about-grid > div {
+            max-width: 560px;
+        }
+
+        .about-grid p {
+            color: #bfbfbf;
+            line-height: 1.8;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .channel-grid {
+            display: grid;
+            gap: 14px;
+            min-width: 260px;
+        }
+
+        .channel-grid a {
+            border: 1px solid var(--line);
+            padding: 16px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .channel-grid a:hover {
+            border-color: var(--acc);
+            color: var(--acc);
+        }
+
+        .channel-grid b {
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .channel-grid span {
+            font-size: 13px;
+            color: var(--mut);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 36px;
+        }
+
+        .work-card {
+            border: 1px solid var(--line);
+            overflow: hidden;
+            position: relative;
+            transition: border-color 0.25s;
+        }
+
+        .work-card:hover {
+            border-color: var(--acc);
+        }
+
+        .work-card img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            display: block;
+            filter: grayscale(0.7);
+            transition: filter 0.4s, transform 0.5s;
+        }
+
+        .work-card:hover img {
+            filter: grayscale(0);
+            transform: scale(1.04);
+        }
+
+        .work-card .cap {
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .work-card .cap small {
+            color: var(--mut);
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .work-card .cap b {
+            color: var(--acc);
+            font-size: 16px;
+        }
+
+        .contact-links {
+            display: grid;
+            gap: 10px;
+            margin-top: 36px;
+            max-width: 620px;
+        }
+
+        .contact-links a {
+            display: flex;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border: 1px solid var(--line);
+            font-size: 15px;
+            transition: border-color 0.2s, color 0.2s, transform 0.2s;
+        }
+
+        .contact-links a:hover {
+            border-color: var(--acc);
+            color: var(--acc);
+            transform: translateX(6px);
+        }
+
+        .contact-links a b {
+            color: var(--acc);
+        }
+
+        footer {
+            padding: 14px 0;
+            border-top: 1px solid var(--line);
+            position: absolute;
+            left: 28px;
+            right: 28px;
+            bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--mut);
+        }
+
+        footer a {
+            color: var(--mut);
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--acc);
+        }
+
+        .dots {
+            position: fixed;
+            right: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 55;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dots button {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            border: 1px solid var(--mut);
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.2s;
+        }
+
+        .dots button.active {
+            background: var(--acc);
+            border-color: var(--acc);
+            transform: scale(1.35);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.6);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="loader" id="loader">
+        <div class="loader-mark">WARITTORN<span>.</span>archive</div>
+        <div class="loader-line"><i></i></div>
+        <p class="mono">loading signal <b id="load-count">00</b></p>
+    </div>
+
+    <div class="noise" aria-hidden="true"></div>
+
+    <header>
+        <a class="wordmark" href="#slide-1">WARITTORN<span>.</span></a>
+        <nav>
+            <a href="#slide-2">about</a>
+            <a href="#slide-3">archive</a>
+            <a href="#slide-4">contact</a>
+        </nav>
+        <span class="site-url">bangkok / thailand</span>
+    </header>
+
+    <div class="dots" id="dots"></div>
+
+    <main class="scroller" id="scroller">
+
+        <section class="slide hero" id="slide-1">
+            <div class="hero-meta">
+                <span>01 — personal archive</span>
+                <span>bangkok / internet</span>
+            </div>
+            <div class="hero-main">
+                <div class="hero-name">
+                    <p>student / tech geek / dog lover</p>
+                    <h1>WARITTORN<br><span class="glitch" data-text="TRAKULTAWEEKOON">TRAKULTAWEEKOON</span></h1>
+                </div>
+                <figure class="imgwrap">
+                    <img src="avatar-transparent.png" alt="Warittorn portrait">
+                    <figcaption>PROFILE / 01</figcaption>
+                </figure>
+            </div>
+            <p class="cue mono">SCROLL FOR SIGNALS <b>↓</b></p>
+        </section>
+
+        <section class="slide" id="slide-2">
+            <p class="index">02 / LORE</p>
+            <h2>currently<br><span>learning.</span></h2>
+            <div class="about-grid">
+                <div>
+                    <p>Warittorn Trakultaweekoon (nickname <b style="color:var(--acc)">Fluke</b>). I am currently studying at King Mongkut's Institute of Technology Ladkrabang (KMITL) &mdash; สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง.</p>
+                    <p>I like dogs, I am interested in technology, and I spend my free time making little things on the internet &mdash; like this archive.</p>
+                    
+                </div>
+                <div class="channel-grid">
+                    <a href="https://www.instagram.com/flukeluvdodii/" target="_blank" rel="noreferrer">
+                        <b>01 / FOLLOW</b><span>Instagram<br>@flukeluvdodii ↗</span>
+                    </a>
+                    <a href="https://www.instagram.com/flukeluvdodii/" target="_blank" rel="noreferrer">
+                        <b>02 / DM</b><span>Open<br>Instagram ↗</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" id="slide-3">
+            <p class="index">03 / ARCHIVE</p>
+            <h2>little<br><span>signals.</span></h2>
+            <div class="cards">
+                <div class="work-card">
+                    <img src="profile-photo-2.jpg" alt="picture 01">
+                    <div class="cap"><small>SCENE / 01</small><b>↗</b></div>
+                </div>
+                <div class="work-card">
+                    <img src="profile-photo-3.jpg" alt="picture 02">
+                    <div class="cap"><small>SCENE / 02</small><b>↗</b></div>
+                </div>
+                <div class="work-card">
+                    <img src="profile-photo-6.jpg" alt="picture 03">
+                    <div class="cap"><small>SCENE / 03</small><b>↗</b></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" id="slide-4">
+            <p class="index">04 / CONTACT</p>
+            <h2>find the<br><span>next signal.</span></h2>
+            <div class="contact-links">
+                <a href="https://www.instagram.com/flukeluvdodii/" target="_blank" rel="noreferrer">
+                    <span>INSTAGRAM</span><b>@flukeluvdodii ↗</b>
+                </a>
+                <a href="https://www.instagram.com/flukeluvdodii/" target="_blank" rel="noreferrer">
+                    <span>BOOKINGS / COLLABS</span><b>DM ON INSTAGRAM ↗</b>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        var loader = document.getElementById('loader');
+        var count = document.getElementById('load-count');
+        var n = 0;
+        var timer = setInterval(function () {
+            n += 2;
+            if (count) count.textContent = String(n).padStart(2, '0');
+            if (n >= 100) {
+                clearInterval(timer);
+                setTimeout(function () { loader.classList.add('done'); }, 400);
+            }
+        }, 30);
+
+        var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+        var scroller = document.getElementById('scroller');
+        var dotsWrap = document.getElementById('dots');
+
+        slides.forEach(function () {
+            var dot = document.createElement('button');
+            dot.setAttribute('aria-label', 'go to slide');
+            dotsWrap.appendChild(dot);
+        });
+
+        var dots = Array.prototype.slice.call(dotsWrap.children);
+
+        dots.forEach(function (dot, i) {
+            dot.addEventListener('click', function () {
+                slides[i].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    var i = slides.indexOf(entry.target);
+                    dots.forEach(function (d, k) { d.classList.toggle('active', k === i); });
+                }
+            });
+        }, { threshold: 0.6 });
+
+        slides.forEach(function (s) { io.observe(s); });
+    </script>
+</body>
+
+</html>
