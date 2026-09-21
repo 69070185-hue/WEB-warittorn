@@ -1,0 +1,41 @@
+﻿{
+  "name": "antigravity-webhook-shield",
+  "version": "1.0.0",
+  "description": "Anti-spam proxy server protecting Discord Webhooks from payload abuse and API rate limits.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "lint": "eslint src/**/*.js"
+  },
+  "keywords": [
+    "discord",
+    "webhook",
+    "anti-spam",
+    "proxy",
+    "rate-limit"
+  ],
+  "author": "Antigravity Webhook Shield",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "axios-retry": "^4.4.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "joi": "^17.13.3",
+    "cors": "^2.8.5",
+    "node-cache": "^5.1.2",
+    "pino": "^9.3.2",
+    "pino-pretty": "^11.2.1",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+
